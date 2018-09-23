@@ -1,0 +1,16 @@
+{
+  "name": "basic_webapp",
+  "description": "Template for basic CRUD app",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "4.x",
+    "mongodb": "3.x",
+    "socket.io": "2.x"
+  },
+  "engines": {
+    "node": "8.10.0",
+    "npm": "3.5.x"
+  }
+}
