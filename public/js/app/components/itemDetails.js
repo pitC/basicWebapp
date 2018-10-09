@@ -1,9 +1,12 @@
+const URL = "http://localhost:3000/objects";
+
 export default {
   data: function() {
     return {
       title: "<new title>",
       attributes: [{ name: null, value: null }],
-      _id: null
+      _id: null,
+      saved: false
     };
   },
   methods: {
@@ -20,13 +23,15 @@ export default {
         attributes: this.attributes
       };
       if (this._id == null) {
-        axios.post("http://localhost:3000/objects/", payload).then(response => {
+        axios.post(URL, payload).then(response => {
           console.log(response);
           this._id = response.data._id;
+          this.saved = true;
         });
       } else {
-        axios.put("http://localhost:3000/objects/"+this._id, payload).then(response => {
+        axios.put(URL+"/"+this._id, payload).then(response => {
           console.log(response);
+          this.saved = true;
         });
       }
     }
@@ -34,15 +39,22 @@ export default {
   mounted() {
     var id = this.$route.params.id;
     if (id != null){
-        axios.get("http://localhost:3000/objects/"+id).then(response => {
+        axios.get(URL+"/"+id).then(response => {
       this._id = response.data._id;
       this.title = response.data.title;
       this.attributes = response.data.attributes;
     });
+    }    
+  },
+  watch: {
+    '$route' (to, from) {
+      // reset data when changing route to an empty one
+      if (typeof to.param === 'undefined'){
+        this.title=null;
+        this._id=null;
+        this.attributes=[];
+      }
     }
-    
-    console.log("Mounted! "+this.$route.params.id);
-    
   },
   template: `
     <keep-alive>
