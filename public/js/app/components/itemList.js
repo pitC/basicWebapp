@@ -34,7 +34,9 @@ export default {
         <tbody>
         <tr v-for="(item, index) in items">
             <td>{{index}}</td>
-            <td>{{item._id}}</td>
+            <td>
+              <a :href="'#/'+item._id">{{item.title}}</a>
+            </td>
             <td>
                 <button type="button" class="btn btn-outline-danger btn-lg" v-on:click="onDelete(index)">
                     <span class="glyphicon glyphicon-remove-circle"></span>

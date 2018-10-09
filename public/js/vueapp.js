@@ -4,7 +4,8 @@ import ItemDetails from "./app/components/itemDetails.js"
 
 const routes = [
      {path:'/', component:ItemList},
-     {path:'/Edit',component:ItemDetails}
+     {path:'/New',component:ItemDetails},
+     {path:'/:id',component:ItemDetails}
 ]
 
 const router = new VueRouter({
@@ -14,3 +15,4 @@ const router = new VueRouter({
   const app = new Vue({
     router
   }).$mount('app')
+  
