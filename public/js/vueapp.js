@@ -1,18 +1,16 @@
-import ItemList from "./app/components/itemList.js"
-import ItemDetails from "./app/components/itemDetails.js"
-
-
+import ItemList from "./app/components/itemList.js";
+import ItemDetails from "./app/components/itemDetails.js";
 
 const routes = [
-     {path:'/', component:ItemList},
-     {path:'/New',component:ItemDetails},
-     {path:'/:id',component:ItemDetails}
-]
+  { path: "/", component: ItemList },
+  { path: "/New", component: ItemDetails },
+  { path: "/:id", component: ItemDetails }
+];
 
 const router = new VueRouter({
-    routes // short for `routes: routes`
-  })
+  routes // short for `routes: routes`
+});
 
-  const app = new Vue({
-    router
-  }).$mount('app')
+const app = new Vue({
+  router
+}).$mount("app");

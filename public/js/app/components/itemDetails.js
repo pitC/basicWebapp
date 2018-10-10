@@ -1,6 +1,5 @@
 const URL = "objects";
-import dataSync from "../dataSync.js"
-
+import dataSync from "../dataSync.js";
 
 export default {
   data: function() {
@@ -26,37 +25,37 @@ export default {
       };
       if (this._id == null) {
         var self = this;
-        dataSync.createItem(payload,function(response){
+        dataSync.createItem(payload, function(response) {
           self._id = response.data._id;
           self.saved = true;
-        })
+        });
       } else {
         var self = this;
         payload._id = self._id;
-        dataSync.updateItem(payload,function(response){
+        dataSync.updateItem(payload, function(response) {
           self.saved = true;
-        })
+        });
       }
     }
   },
   mounted() {
     var id = this.$route.params.id;
     // TODO: fill with data from list instead of reloading the data from API
-    if (id != null){
-        axios.get(URL+"/"+id).then(response => {
-      this._id = response.data._id;
-      this.title = response.data.title;
-      this.attributes = response.data.attributes;
-    });
-    }    
+    if (id != null) {
+      axios.get(URL + "/" + id).then(response => {
+        this._id = response.data._id;
+        this.title = response.data.title;
+        this.attributes = response.data.attributes;
+      });
+    }
   },
   watch: {
-    '$route' (to, from) {
+    $route(to, from) {
       // reset data when changing route to an empty one
-      if (typeof to.param === 'undefined'){
-        this.title=null;
-        this._id=null;
-        this.attributes=[];
+      if (typeof to.param === "undefined") {
+        this.title = null;
+        this._id = null;
+        this.attributes = [];
       }
     }
   },
