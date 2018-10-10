@@ -7,7 +7,7 @@
     "body-parser": "^1.18.3",
     "express": "4.x",
     "mongodb": "3.x",
-    "socket.io": "2.x"
+    "socket.io": "^2.1.1"
   },
   "engines": {
     "node": "8.10.0",

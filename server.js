@@ -1,11 +1,11 @@
 var express = require('express'),
     path = require('path'),
     http = require('http'),
-    http = require('http'),
     objects = require('./routes/objects'),
     cfg = require('./config.json'),
     bodyParser = require('body-parser')
     ;
+
 
 var app = express();
 
@@ -22,7 +22,28 @@ app.post('/objects', objects.addObject);
 app.put('/objects/:id', objects.updateObject);
 app.delete('/objects/:id', objects.deleteObject);
 
-http.createServer(app).listen(app.get('port'), function () {
+
+
+server = http.createServer(app);
+
+var io = require('socket.io').listen(server);
+
+server.listen(app.get('port'), function () {
     console.log("Express server listening on port " + app.get('port'));
     console.log(cfg);
 });
+
+io.on('connection', function(socket){
+    console.log('a user connected');
+    socket.on('disconnect', function(){
+        console.log('user disconnected');
+      });
+    
+    socket.on("item-removed", function(msg){
+        console.log('message!');
+        console.log(msg);
+        this.broadcast.emit("item-removed",msg);
+      });
+});
+
+
