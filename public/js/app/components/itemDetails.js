@@ -1,4 +1,5 @@
-const URL = "http://localhost:3000/objects";
+const URL = "objects";
+import dataSync from "../dataSync.js"
 
 
 export default {
@@ -24,21 +25,23 @@ export default {
         attributes: this.attributes
       };
       if (this._id == null) {
-        axios.post(URL, payload).then(response => {
-          console.log(response);
-          this._id = response.data._id;
-          this.saved = true;
-        });
+        var self = this;
+        dataSync.createItem(payload,function(response){
+          self._id = response.data._id;
+          self.saved = true;
+        })
       } else {
-        axios.put(URL+"/"+this._id, payload).then(response => {
-          console.log(response);
-          this.saved = true;
-        });
+        var self = this;
+        payload._id = self._id;
+        dataSync.updateItem(payload,function(response){
+          self.saved = true;
+        })
       }
     }
   },
   mounted() {
     var id = this.$route.params.id;
+    // TODO: fill with data from list instead of reloading the data from API
     if (id != null){
         axios.get(URL+"/"+id).then(response => {
       this._id = response.data._id;

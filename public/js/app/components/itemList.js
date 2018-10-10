@@ -9,22 +9,28 @@ export default {
     };
   },
   mounted() {
-    
-    axios.get("http://localhost:3000/objects").then(response => {
+    // TODO: create initial sync
+    axios.get("/objects").then(response => {
       this.items = response.data;
     });
 
     var self = this;
     dataSync.registerPushEventHandler(dataSync.events.ITEM_REMOVED_EV, function(msg){
-        console.log(msg);
-        var index = self.items.findIndex(x => x._id==msg._id)
-        console.log(index);
-        self.$delete(self.items, index);
+      var index = self.items.findIndex(x => x._id==msg._id)
+      self.$delete(self.items, index);
+    });
+
+    dataSync.registerPushEventHandler(dataSync.events.ITEM_CREATED_EV,function(msg){
+      self.items.push(msg);
+    });
+
+    dataSync.registerPushEventHandler(dataSync.events.ITEM_UPDATED_EV,function(msg){
+      var index = self.items.findIndex(x => x._id==msg._id)
+      self.$set(self.items, index, msg)
     });
   },
   methods: {
     onDelete: function(index) {
-      console.log("delte " + index);
       var item = this.items[index];
       var self = this;
       dataSync.removeItem(item,function(response){

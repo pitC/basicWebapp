@@ -43,7 +43,19 @@ io.on('connection', function(socket){
         console.log('message!');
         console.log(msg);
         this.broadcast.emit("item-removed",msg);
-      });
+    });
+
+    socket.on("item-created", function(msg){
+        console.log('message!');
+        console.log(msg);
+        this.broadcast.emit("item-created",msg);
+    });
+
+    socket.on("item-updated", function(msg){
+        console.log('message!');
+        console.log(msg);
+        this.broadcast.emit("item-updated",msg);
+    });
 });
 
 
