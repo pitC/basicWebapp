@@ -9,22 +9,27 @@ export default {
     };
   },
   mounted() {
-    // TODO: create initial sync
-    axios.get("/objects").then(response => {
-      this.items = response.data;
-    });
+    console.log("mounted!");
+    console.log(this.items);
 
     var self = this;
+
+    dataSync.getAllItems(function(response){
+      self.items = response.data;
+    });
+    
     dataSync.registerPushEventHandler(dataSync.events.ITEM_REMOVED_EV, function(msg){
       var index = self.items.findIndex(x => x._id==msg._id)
       self.$delete(self.items, index);
     });
 
     dataSync.registerPushEventHandler(dataSync.events.ITEM_CREATED_EV,function(msg){
+      console.log(msg)
       self.items.push(msg);
     });
 
     dataSync.registerPushEventHandler(dataSync.events.ITEM_UPDATED_EV,function(msg){
+      console.log("Item updated!");
       var index = self.items.findIndex(x => x._id==msg._id)
       self.$set(self.items, index, msg)
     });
@@ -54,7 +59,7 @@ export default {
         <tr v-for="(item, index) in items">
             <td>{{index}}</td>
             <td>
-              <a :href="'#/'+item._id">{{item.title}}</a>
+              <router-link :to="{name:'itemDetails',params:{id:item._id}}">{{item.title}}</router-link>
             </td>
             <td>
                 <button type="button" class="btn btn-outline-danger btn-lg" v-on:click="onDelete(index)">

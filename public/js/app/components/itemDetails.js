@@ -1,4 +1,3 @@
-const URL = "objects";
 import dataSync from "../dataSync.js";
 
 export default {
@@ -40,14 +39,23 @@ export default {
   },
   mounted() {
     var id = this.$route.params.id;
-    // TODO: fill with data from list instead of reloading the data from API
+    var self = this;
     if (id != null) {
-      axios.get(URL + "/" + id).then(response => {
-        this._id = response.data._id;
-        this.title = response.data.title;
-        this.attributes = response.data.attributes;
-      });
+      dataSync.getItem(id,function(response){
+        self._id = response.data._id;
+        self.title = response.data.title;
+        self.attributes = response.data.attributes;
+      })
     }
+    dataSync.registerPushEventHandler(dataSync.events.ITEM_CREATED_EV, function(msg){
+      // if persistence is on, the server will assign final ID and send it back to the creator
+      self._id = msg._id
+    })
+    dataSync.registerPushEventHandler(dataSync.events.ITEM_UPDATED_EV, function(msg){
+      self._id = msg._id
+      self.title = msg.title
+      self.attributes = msg.attributes
+    })
   },
   watch: {
     $route(to, from) {

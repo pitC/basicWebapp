@@ -73,5 +73,23 @@ export default {
         .put(URL + "/" + item._id, item)
         .then(response => callback(response));
     }
+  },
+
+  getItem: function(id, callback){
+    if (isSocket()){
+      // TODO fetch for solution without persistance on server
+      axios.get(URL + "/" + id).then(response => callback(response));
+    } else {
+      axios.get(URL + "/" + id).then(response => callback(response));
+    }
+  },
+
+  getAllItems: function(callback){
+    if (isSocket()){
+      // TODO fetch for solution without persistance on server
+      axios.get(URL).then(response => callback(response));
+    }else{ 
+      axios.get(URL).then(response => callback(response));
+    }
   }
 };

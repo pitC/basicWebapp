@@ -4,7 +4,7 @@ import ItemDetails from "./app/components/itemDetails.js";
 const routes = [
   { path: "/", component: ItemList },
   { path: "/New", component: ItemDetails },
-  { path: "/:id", component: ItemDetails }
+  { path: "/:id",name:"itemDetails", component: ItemDetails}
 ];
 
 const router = new VueRouter({

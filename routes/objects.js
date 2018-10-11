@@ -5,7 +5,7 @@ cfg = require('../config.json');
 var url = "mongodb://"+cfg.db.host+":"+cfg.db.port;
 const COLLECTION = "objects";
 var db;
-// TODO: move to mongoose
+// TODO: refactor to separate module and move to mongoose
 
 MongoClient.connect(url, function(err, database) {
   if (err) throw err;
@@ -30,6 +30,15 @@ function resError(res){
     res.send("Oops!")
 }
 
+function buildIdObject(id){ 
+    try {
+        return new ObjectId(id)
+    }
+    catch(err){
+        return id
+    }
+}
+
 function findQuery(res,query) {
     db.collection(COLLECTION, function(err, collection) {
         collection.findOne(query, function(err, item) {
@@ -41,7 +50,7 @@ function findQuery(res,query) {
 exports.findById = function(req, res) {
     var id = req.params.id;
     console.log('Retrieving object: ' + id);
-    findQuery(res,{'_id':new ObjectId(id)});
+    findQuery(res,{'_id':buildIdObject(id)});
 };
 
 exports.findAll = function(req, res) {
@@ -52,58 +61,105 @@ exports.findAll = function(req, res) {
     });
 };
 
-exports.addObject = function(req, res) {
+exports.addObjectReq = function(req, res) {
     var newObject = req.body;
     console.log('Adding object: ' + JSON.stringify(newObject));
+    addObject(newObject,function(respObj){
+        res.send(JSON.stringify(respObj));
+    }, function(err){
+        resError(res);
+    });
+}
+
+exports.addObject = function(newObject,okCallback,errCallback) {
     if (newObject){
+        delete newObject._id
         db.collection(COLLECTION, function(err, collection) {
             collection.insertOne(newObject, {safe:true}, function(err, dbResponse) {
                 if (err) {
                     console.log(err);
-                    resError(res);
+                    errCallback(err);
                 } else {
-                    console.log('Success: ' + JSON.stringify(dbResponse.ops[0]));
-                    res.send(JSON.stringify(dbResponse.ops[0]));
+                    var createdObject = dbResponse.ops[0];
+                    okCallback(createdObject)
                 }
             });
         });
     }
     else
-        resError(res);
+        errCallback(null);
 }
 
-exports.updateObject = function(req, res) {
+exports.updateObjectReq = function(req, res) {
     var id = req.params.id;
     var object = req.body;
-    console.log('Updating object: ' + id);
+    console.log('API Updating object: ' + id);
     console.log(JSON.stringify(object));
+
+    updateObject(object,
+        function(respObject){
+            res.send(JSON.stringify(resObject));
+        },function(err){
+            resError(res);
+        });
+}
+
+exports.updateObject = function(object,okCallback,errCallback){
+    console.log('Updating object: ');
+    console.log(object);
+    var id = object._id
+    if (object._id){
+        delete object._id;
+    }
+    
     db.collection(COLLECTION, function(err, collection) {
-        collection.replaceOne({'_id':new ObjectId(id)}, object, {safe:true}, function(err, dbResponse) {
+        collection.replaceOne({'_id':buildIdObject(id)}, object, {safe:true}, function(err, dbResponse) {
             if (err) {
-                console.log('Error updating object: ' + err);
-                resError(res);
+                errCallback(err);
             } else {
-                console.log('' + JSON.stringify(dbResponse.ops[0]) + ' document(s) updated');
-                res.send(JSON.stringify(object));
+                if (dbResponse.matchedCount>0){
+                    object._id = id;
+                    okCallback(object)
+                }
+                else{
+                    // TODO produce valid error object
+                    errCallback(null)
+                }
+                
             }
         });
     });
 }
 
-exports.deleteObject = function(req, res) {
+exports.deleteObjectReq = function(req, res) {
     var id = req.params.id;
     var object = req.body;
+    
+    deleteObject(object,function(respObj){
+        res.send(JSON.stringify(respObj));
+    }, function(err){
+        resError(res);
+    })
+}
+
+exports.deleteObject = function(object,okCallback,errCallback) {
+    
+    var id = object._id
     delete object._id
     console.log('Deleting object: ' + id);
-    db.collection(COLLECTION, function(err, collection) {
-        collection.removeOne({'_id':new ObjectId(id)}, {safe:true}, function(err, dbResponse) {
-            if (err) {
-                console.log(err);
-                resError(res);
-            } else {
-                console.log('Document deleted');
-                res.send(JSON.stringify(object));
-            }
+    try {
+        db.collection(COLLECTION, function(err, collection) {
+            collection.removeOne({'_id':buildIdObject(id)}, {safe:true}, function(err, dbResponse) {
+                if (err) {
+                    errCallback(err);
+                } else {
+                    object._id = id;
+                    okCallback(object);
+                }
+            });
         });
-    });
+    }
+    catch(err) {
+        errCallback(err)
+    }
 }

@@ -16,8 +16,8 @@ app.set("port", process.env.PORT || 3000);
 app.get("/dummy", objects.getDummy);
 app.get("/objects", objects.findAll);
 app.get("/objects/:id", objects.findById);
-app.post("/objects", objects.addObject);
-app.put("/objects/:id", objects.updateObject);
+app.post("/objects", objects.addObjectReq);
+app.put("/objects/:id", objects.updateObjectReq);
 app.delete("/objects/:id", objects.deleteObject);
 
 server = http.createServer(app);
@@ -38,18 +38,53 @@ io.on("connection", function(socket) {
   socket.on("item-removed", function(msg) {
     console.log("message!");
     console.log(msg);
-    this.broadcast.emit("item-removed", msg);
+    if (cfg.app.socketPersistance){
+      var self = this;
+      objects.deleteObject(msg,function(respObj){
+        self.broadcast.emit("item-removed", respObj);
+      }, function(err){
+        console.log(err);
+      });
+    }
+    else{
+      this.broadcast.emit("item-removed", msg);
+    }
   });
 
   socket.on("item-created", function(msg) {
     console.log("message!");
     console.log(msg);
-    this.broadcast.emit("item-created", msg);
+    if (cfg.app.socketPersistance){
+      var self = this;
+      objects.addObject(msg,function(respObj){
+        io.emit("item-created", respObj);
+      }, function(err){
+        console.log(err);
+      });
+    }
+    else{
+      this.broadcast.emit("item-created", msg);
+    }
+
+
+    
   });
 
   socket.on("item-updated", function(msg) {
     console.log("message!");
     console.log(msg);
-    this.broadcast.emit("item-updated", msg);
+    if (cfg.app.socketPersistance){
+      var self = this;
+      objects.updateObject(msg,function(respObj){
+        console.log("object updated!")
+        self.broadcast.emit("item-updated", msg);
+      }, function(err){
+        console.log(err);
+      });
+    }
+    else{
+      this.broadcast.emit("item-updated", msg);
+    }
+    
   });
 });

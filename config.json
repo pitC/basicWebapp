@@ -6,6 +6,9 @@
     },
     "server" : {
         "port" : 3000
+    },
+    "app": {
+        "socketPersistance" : true
     }
 
 }
