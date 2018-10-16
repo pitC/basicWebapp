@@ -1,11 +1,15 @@
 import dataSync from "../dataSync.js"
+import ItemDetails from "./itemDetails.js";
 
-var socket = io();
+Vue.component('item-details',ItemDetails);
+
+const DEFAULT_ACTIVE_ITEM = {_id:null,title:"",attributes:[]}
 
 export default {
   data: function() {
     return {
-      items: []
+      items: [],
+      activeItem: DEFAULT_ACTIVE_ITEM
     };
   },
   mounted() {
@@ -40,8 +44,19 @@ export default {
       var self = this;
       dataSync.removeItem(item,function(response){
         self.$delete(self.items, index);
+        Object.assign(self.activeItem, DEFAULT_ACTIVE_ITEM)
       }
       );
+    },
+
+    onEdit: function(index){
+      this.activeItem = this.items[index]; 
+    },
+    onItemChange:function(item){
+      var index = this.items.findIndex(x => x._id==item._id)
+      console.log("item change!")
+      console.log(item)
+      this.$set(this.items, index, item)
     }
   },
   template: `
@@ -53,6 +68,7 @@ export default {
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col">Delete</th>
+                <th scope="col">Edit</th>
             </tr>
         </thead>
         <tbody>
@@ -66,9 +82,16 @@ export default {
                     <span class="glyphicon glyphicon-remove-circle"></span>
                 </button>
             </td>
+            <td>
+                <button type="button" class="btn btn-outline-success btn-lg" v-on:click="onEdit(index)">
+                    <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                </button>
+            </td>
         </tr>
         </tbody>
+        
     </table>
+    <item-details :itemDetails="activeItem"></item-details>
     </div>
     `
 };
