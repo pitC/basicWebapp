@@ -19,6 +19,7 @@ export default {
   methods: {
     onRemove: function(index) {
       this.$delete(this.itemDetails.attributes, index);
+      this.saved = false;
     },
     onAdd: function() {
       this.itemDetails.attributes.push({ name: null, value: null });
