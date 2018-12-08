@@ -30,7 +30,7 @@
                 </nav>
             </div>
         </header>
-        <app>
+        <div id="vue-app">
             <!-- <list-entry v-for="item in items" v-bind:item="item" :key="item._id"></list-entry>  -->
             <main role="main" class="inner cover">
                 <div class="row">
@@ -39,14 +39,16 @@
                     </div>
                 </div>
             </main>
-        </app>
+        </div>
         <footer class="mastfoot mt-auto">
             <div class="inner">
                 <p>Basic CRUD Webapp</p>
             </div>
         </footer>
 
-
         <script type="module" src="js/vueapp.js"></script>
-
-</body>
+        <script src="./dist/build.js" defer nomodule></script>
+<script>
+console.log("hello");
+</script>
+</body> 

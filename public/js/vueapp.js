@@ -4,7 +4,7 @@ import ItemDetails from "./app/components/itemDetails.js";
 const routes = [
   { path: "/", component: ItemList },
   { path: "/New", component: ItemDetails },
-  { path: "/:id",name:"itemDetails", component: ItemDetails}
+  { path: "/:id", name: "itemDetails", component: ItemDetails }
 ];
 
 const router = new VueRouter({
@@ -13,4 +13,4 @@ const router = new VueRouter({
 
 const app = new Vue({
   router
-}).$mount("app");
+}).$mount("#vue-app");

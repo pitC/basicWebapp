@@ -4,13 +4,26 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "express": "4.x",
-    "mongodb": "3.x",
-    "socket.io": "^2.1.1"
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "express": "^4.16.4",
+    "mongodb": "^3.1.10",
+    "socket.io": "^2.1.1",
+    "webpack": "^4.26.1",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "scripts": {
+    "serve": "node ./server.js",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
     "node": "8.10.0",
     "npm": "3.5.x"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.1.2"
   }
 }
